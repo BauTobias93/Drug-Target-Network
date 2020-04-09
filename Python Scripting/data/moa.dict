@@ -1,0 +1,115 @@
+  17263|ND|
+   2582|inhibitor|inh
+   1658|antagonist|ant
+   1094|agonist|ago
+    404|potentiator|pot
+    315|ligand|lig
+    279|binder|bin
+    138|activator|act
+    134|cofactor|cof
+    132|substrate,inducer|sub_ind
+    101|other/unknown|
+     76|inducer|ind
+     63|partial agonist|pag
+     58|substrate,inhibitor,inducer|duo
+     57|other|
+     55|antibody|abo
+     45|positive allosteric modulator|aga
+     42|antagonist,inhibitor|ant
+     34|product of|pro
+     31|negative modulator|neg
+     30|modulator|mod
+     29|blocker|inh
+     29|antagonist,agonist|duo
+     24|allosteric modulator|alo
+     23|unknown|
+     23|intercalation|itc
+     22|adduct|cov
+     20|inverse agonist|ANT
+     20|cross-linking/alkylation|cov
+     19|chelator|chel
+     17|substrate|sub
+     16|cleavage|cli
+     14|incorporation into and destabilization|destbz
+     13|chaperone|chap
+     13|agonist,activator|ago
+     12|stimulator|sti
+     12|binding|bin
+     10|antagonist,partial agonist|ant_pago
+      9|multitarget|
+      9|agonist,partial agonist|ago
+      6|suppressor|sup
+      5|neutralizer|neu
+      4|regulator|reg
+      4|oxidizer|oxi
+      4|metabolizer|met
+      4|downregulator|rdw
+      4|antagonist,antibody|aab
+      3|inhibitor,downregulator|idw
+      3|antisense oligonucleotide|oli
+      3|antagonist,multitarget|ant
+      3|agonist,modulator|ago
+      3|substrate,activator|act
+      3|catalytic activity|cat
+      3|inhibitor,transporter|inh_tra
+      2|stabilization|stbz
+      2|partial antagonist|antp
+      2|inactivator|inh
+      2|degradation|degr
+      2|component of|
+      2|antagonist,other/unknown|ant
+      2|antagonist,blocker|ant
+      2|agonist,inducer|ago
+      1|weak inhibitor|inh
+      1|component|
+      1|substrate,inhibitor,downregulator|idw
+      1|substrate,weak inhibitor|inh
+      1|conversion inhibitor|inh
+      1|substrate,cofactor|cof
+      1|vesicant|ves
+      1|storage|sto
+      1|substrate,inducer,modulator|sub_ind
+      1|substrate,inhibitor,modulator|inh
+      1|substrate,other|sub
+      1|substrate,transporter|tra
+      1|transporter|tra
+      1|carrier|car
+      1|substrate,carrier|car
+      1|substrate,weak|sub
+      1|translocation inhibitor|inh
+      1|tar|tar
+      1|substrate,inhibitor|inh
+      1|reducer|reducer
+      1|protector|protector
+      1|positive modulator|ago
+      1|nucleotide exchange blocker|inh
+      1|inhibitor,inducer|duo
+      1|inhibition of synthesis|inh
+      1|inducer,activator|ago
+      1|inducer,acetylation|ace
+      1|gene replacement|gene_replace
+      1|disruptor|disrupt
+      1|diffusing substance|diffuse
+      1|desensitize the target|inh
+      1|deoxidizer|deoxi
+      1|coating agent|coating
+      1|binder,protector|bin
+      1|binder,potentiator|bin
+      1|binder,activator|bin
+      1|antagonist,modulator|ant
+      1|antagonist,inverse agonist|ant
+      1|antagonist,inhibitory allosteric modulator|ant_allo
+      1|antagonist,dilator|ant
+      1|antagonist,cross-linking/alkylation|ant_cov
+      1|antagonist,binder|ant
+      1|antagonist,agonist,negative modulator|ant
+      1|agonist,stimulator|ago
+      1|agonist,potentiator|ago
+      1|agonist,positive allosteric modulator|ago
+      1|agonist,inhibits downstream inflammation cascades|ago
+      1|agonist,inhibitor,downregulator|duo
+      1|agonist,inhibitor|duo
+      1|agonist,downregulator|duo
+      1|aggregation inhibitor|agi
+      1|activator,potentiator|ago
+      1|activator,modulator|ago

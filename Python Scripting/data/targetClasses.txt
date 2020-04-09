@@ -1,0 +1,56 @@
+target class|generalized target class
+Protein Kinase Superfamily|Kinase
+G-protein Coupled Receptor 1 Family|UNKNOWN
+Ligand-gated Ion Channel (TC 1|Transporter
+Nuclear Hormone Receptor Family|UNKNOWN
+Cytochrome P450 Family|UNKNOWN
+Peptidase S1 Family|UNKNOWN
+Short-chain Dehydrogenases/reductases (SDR) Family|UNKNOWN
+Cyclic Nucleotide Phosphodiesterase Family|UNKNOWN
+Potassium Channel Family|UNKNOWN
+Glutamate-gated Ion Channel (TC 1|Transporter
+Sodium:neurotransmitter Symporter (SNF) (TC 2|UNKNOWN
+G-protein Coupled Receptor 3 Family|UNKNOWN
+Alpha-carbonic Anhydrase Family|UNKNOWN
+Major Facilitator (TC 2|UNKNOWN
+Major Facilitator Superfamily|UNKNOWN
+Calycin Superfamily|UNKNOWN
+Tubulin Family|UNKNOWN
+ABC Transporter Superfamily|UNKNOWN
+GST Superfamily|UNKNOWN
+Serpin Family|UNKNOWN
+Class-I Pyridine Nucleotide-disulfide Oxidoreductase Family|UNKNOWN
+Aldehyde Dehydrogenase Family|UNKNOWN
+Aldo/keto Reductase Family|UNKNOWN
+Dihydrofolate Reductase Family|UNKNOWN
+Type I Cytokine Receptor Family|UNKNOWN
+PI3/PI4-kinase Family|UNKNOWN
+Class I-like SAM-binding Methyltransferase Superfamily|UNKNOWN
+Calcium Channel Alpha-1 Subunit (TC 1|UNKNOWN
+Type-B Carboxylesterase/lipase Family|UNKNOWN
+Transient Receptor (TC 1|UNKNOWN
+AB Hydrolase Superfamily|UNKNOWN
+G-protein Coupled Receptor 2 Family|UNKNOWN
+BZIP Family|UNKNOWN
+Protein-tyrosine Phosphatase Family|UNKNOWN
+Histone Deacetylase Family|UNKNOWN
+Class-A Beta-lactamase Family|UNKNOWN
+Intermediate Filament Family|UNKNOWN
+Cation Transport ATPase (P-type) (TC 3|UNKNOWN
+Sodium Channel (TC 1|UNKNOWN
+Inward Rectifier-type Potassium Channel (TC 1|UNKNOWN
+S-100 Family|UNKNOWN
+Mitochondrial Carrier (TC 2|UNKNOWN
+Peptidase C1 Family|UNKNOWN
+Class-I Aminoacyl-tRNA Synthetase Family|UNKNOWN
+Peptidase A1 Family|UNKNOWN
+Organo Anion Transporter (TC 2|UNKNOWN
+Prostaglandin G/H Synthase Family|UNKNOWN
+Type II Topoisomerase GyrA/ParC Subunit Family|UNKNOWN
+PMP-22/EMP/MP20 Family|UNKNOWN
+P2X Receptor Family|UNKNOWN
+Class-II Aminoacyl-tRNA Synthetase Family|UNKNOWN
+LDH/MDH Superfamily|UNKNOWN
+Carnitine/choline Acetyltransferase Family|UNKNOWN
+Flavin Monoamine Oxidase Family|UNKNOWN
+Glycosyl Hydrolase 34 Family|UNKNOWN

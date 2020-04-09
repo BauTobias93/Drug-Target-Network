@@ -1,0 +1,9 @@
+Drug1 T1-T5 with values
+Drug2 T6-T10 with values
+Drug3 T1-T5 unknown values
+Drug4 Identical to Drug1
+Drug5 T1-T4, 3 unkown, 1 value
+Drug6 T6-T8, with low values
+Drug7 T1 with value, T2 unknown
+Drug8 All Targets with max value
+Drug9 All Targets unknown values
