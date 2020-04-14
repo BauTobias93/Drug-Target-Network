@@ -4,58 +4,58 @@ import operator
 import matplotlib.pyplot as plt
 
 
-def getAllTargetClassesSorted(allTargets):
-    notInFileCounter = 0
-    allTargetClasses = FL.loadAndBuildDictionary(config.TARGET_CLASSES_PATH, 4, "|")
-    targetClasses = {}
-    for target in allTargets:
-        if target in allTargetClasses:
-            splitClasses = allTargetClasses[target].split(".")
-            domainClass = splitClasses[0]
-            if domainClass in targetClasses:
-                targetClasses[domainClass] += 1
+def get_all_target_classes_sorted(all_targets):
+    not_in_file_counter = 0
+    all_target_classes = FL.load_and_build_dictionary(config.TARGET_CLASSES_PATH, 4, "|")
+    target_classes = {}
+    for target in all_targets:
+        if target in all_target_classes:
+            split_classes = all_target_classes[target].split(".")
+            domain_class = split_classes[0]
+            if domain_class in target_classes:
+                target_classes[domain_class] += 1
             else:
-                if domainClass == "Protein Kinase Superfamily":
+                if domain_class == "Protein Kinase Superfamily":
                     print(target)
-                targetClasses[domainClass] = 1
+                target_classes[domain_class] = 1
         else:
-            notInFileCounter += 1
+            not_in_file_counter += 1
 
-    print("Targets not found in file: " + str(notInFileCounter))
-    return sorted(targetClasses.items(), key=operator.itemgetter(1), reverse=True)
+    print("Targets not found in file: " + str(not_in_file_counter))
+    return sorted(target_classes.items(), key=operator.itemgetter(1), reverse=True)
 
 
-def writeClassesToFile(path, targetClasses):
+def write_classes_to_file(path, target_classes):
     file = open(path, "w")
     file.write("target class|generalized target class\n")
-    for tClass, amount in targetClasses:
+    for tClass, amount in target_classes:
         if amount >= 10 and tClass != '':
             file.write(tClass + "|" + "UNKNOWN\n")
     file.close()
 
 
-def printTargetClasses(targetClasses):
-    for entry in targetClasses:
+def print_target_classes(target_classes):
+    for entry in target_classes:
         print(entry)
 
-    limitedAmount = 200
     counter = 0
-    otherValues = 0
-    limitedTargetClasses = {}
-    for key, value in targetClasses:
+    other_values = 0
+    limited_target_classes = {}
+    for key, value in target_classes:
         if key != '' and 3 <= value:
-            limitedTargetClasses[key] = value
+            limited_target_classes[key] = value
             counter += 1
         else:
-            otherValues += value
+            other_values += value
 
-    limitedTargetClasses['Other'] = otherValues
-    print(limitedTargetClasses)
-    plt.pie([v for v in limitedTargetClasses.values()], labels=[k for k in limitedTargetClasses.keys()], autopct=None)
+    limited_target_classes['Other'] = other_values
+    print(limited_target_classes)
+    plt.pie([v for v in limited_target_classes.values()], labels=[k for k in limited_target_classes.keys()],
+            autopct=None)
     plt.show()
 
 
-allDrugs, allTargets = FL.loadFromFiles(config.DRUGS_LIST, config.TARGETS_LIST)
-targetClassesSorted = getAllTargetClassesSorted(allTargets)
-#writeClassesToFile(config.TARGET_CLASSES_GENERAL_GROUPS, targetClassesSorted)
-printTargetClasses(targetClassesSorted)
+all_drugs, all_targets = FL.load_from_files(config.DRUGS_LIST, config.TARGETS_LIST)
+target_classes_sorted = get_all_target_classes_sorted(all_targets)
+# writeClassesToFile(config.TARGET_CLASSES_GENERAL_GROUPS, target_classes_sorted)
+print_target_classes(target_classes_sorted)

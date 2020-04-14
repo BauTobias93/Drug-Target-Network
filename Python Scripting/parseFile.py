@@ -10,39 +10,48 @@ GLOABALCOUNTER = 0
 # global GLOABALCOUNTER
 # change GLOABALCOUNTER
 
-def getProtInfo(matches):
-    splitMatches = matches.split(";")
+def parse_protein_info(matches):
+    split_matches = matches.split(";")
     proteins = {}
     # preprocess target groups
-    for i in range(0, len(splitMatches)):
-        if "," in splitMatches[i]:
-            tempTargetsGroup = []
-            split = splitMatches[i].split(":")
+    for i in range(0, len(split_matches)):
+        if "," in split_matches[i]:
+            temp_targets_group = []
+            split = split_matches[i].split(":")
             for entry in split:
                 if "," in entry:
-                    partEntry = entry.split(",")
-                    if len(tempTargetsGroup) != 0:
-                        for j in range(0, len(partEntry)):
-                            tempTargetsGroup[j] += ":" + str(partEntry[j])
+                    part_entry = entry.split(",")
+                    if len(temp_targets_group) != 0:
+                        # making sure that formats match
+                        if len(part_entry) == len(temp_targets_group):
+                            for j in range(0, len(part_entry)):
+                                temp_targets_group[j] += ":" + str(part_entry[j])
+                        else:
+                            full_string = ""
+                            for j in range(0, len(part_entry)):
+                                full_string += part_entry[j] + ","
+                            full_string = full_string[:-1]
+                            for j in range(0, len(temp_targets_group)):
+                                temp_targets_group[j] += ":" + full_string
                     else:
-                        for j in range(0, len(partEntry)):
-                            tempTargetsGroup.append(str(partEntry[j]))
+                        for j in range(0, len(part_entry)):
+                            temp_targets_group.append(str(part_entry[j]))
                 else:
-                    if len(tempTargetsGroup) != 0:
-                        for j in range(0, len(tempTargetsGroup)):
-                            tempTargetsGroup[j] += ":" + str(entry)
+                    if len(temp_targets_group) != 0:
+                        for j in range(0, len(temp_targets_group)):
+                            temp_targets_group[j] += ":" + str(entry)
                     else:
-                        tempTargetsGroup.append(str(entry))
+                        temp_targets_group.append(str(entry))
             # add all splited up targets to the matches, the first one overwrites the old one
-            for j in range(0, len(tempTargetsGroup)):
+            for j in range(0, len(temp_targets_group)):
                 if j == 0:
-                    splitMatches[i] = str(tempTargetsGroup[j])
+                    split_matches[i] = str(temp_targets_group[j])
                 else:
-                    splitMatches.append(str(tempTargetsGroup[j]))
+                    split_matches.append(str(temp_targets_group[j]))
 
     # start putting the targets in
-    for match in splitMatches:
-        hasValue = False
+    for match in split_matches:
+        has_value = False
         match = match.split(":")
         protein = None
         if match[0] != '':
@@ -57,32 +66,33 @@ def getProtInfo(matches):
                 if match[4] != '':
                     if '<' in match[4]:
                         match[4] = match[4][1:]
-                        protein.value = 4
-                    else:
-                        if '>' in match[4]:
-                            match[4] = match[4][1:]
-                        protein.value = float(match[4])
-                    hasValue = True
+                        protein.less_greater_than_sign = -1
+                    elif '>' in match[4]:
+                        match[4] = match[4][1:]
+                        protein.less_greater_than_sign = 1
+
+                    protein.value = float(match[4])
+                    has_value = True
                 if match[5] != '':
-                    protein.dbSource = match[5]
+                    protein.db_source = match[5]
 
-        if protein != None and not hasValue:
+        if protein is not None and not has_value:
             protein.value = 0
-            protein.experimentalValue = True
-            hasValue = True
+            protein.experimental_value = True
+            has_value = True
 
-        if protein != None and hasValue:  # proteins with no activity value will not be saved
-            proteinName = protein.name.upper() + "_" + protein.species.upper()
-            proteins[proteinName] = protein
+        if protein is not None and has_value:  # proteins with no activity value will not be saved
+            protein_name = protein.name.upper() + "_" + protein.species.upper()
+            proteins[protein_name] = protein
     return proteins
 
 
-def findATCforDrugInFile(path, drug):
+def find_atc_for_drug_in_file(path, drug):
     file = open(path, "r")
     for line in file:
-        lineSplit = line.split("$")
-        if len(lineSplit) == 5 and drug.name.lower() == str(lineSplit[0]).lower() and lineSplit[3] != "":
-            drug.atc = lineSplit[3].split(",")
+        line_split = line.split("$")
+        if len(line_split) == 5 and drug.name.lower() == str(line_split[0]).lower() and line_split[3] != "":
+            drug.atc = line_split[3].split(",")
             file.close()
             return 0
 
@@ -90,114 +100,114 @@ def findATCforDrugInFile(path, drug):
     return 1
 
 
-def findATCforDrug(atcPath, atcAdditionalPath, drug, drugsWithoutATC):
+def find_atc_for_drug(atc_path, drug, drugs_without_atc, atc_additional_path=None):
     count = 0
-    count += findATCforDrugInFile(atcPath, drug)
-    count += findATCforDrugInFile(atcAdditionalPath, drug)
-    if count == 2:
-        drugsWithoutATC.append(drug.name)
+    count += find_atc_for_drug_in_file(atc_path, drug)
+    if atc_additional_path is not None:
+        count += find_atc_for_drug_in_file(atc_additional_path, drug)
+    if count == 2 or (count == 1 and atc_additional_path is None):
+        drugs_without_atc.append(drug.name)
         return 1
     else:
         return 0
 
 
-def appendDrugName(allDrugs, drugName):
-    if drugName.upper() not in allDrugs:
-        allDrugs.append(drugName.upper())
+def append_drug_name(all_drugs, drug_name):
+    if drug_name.upper() not in all_drugs:
+        all_drugs.append(drug_name.upper())
 
 
-def appendTargetNames(allTargets, targetDict):
-    for target in targetDict:
-        if target not in allTargets:
-            allTargets.append(target)
+def append_target_names(all_targets, target_dict):
+    for target in target_dict:
+        if target not in all_targets:
+            all_targets.append(target)
 
 
-def parseDrugs(drugsPath, atcPath, atcAdditionalPath):
+def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
     drugs = {}
-    allDrugs = []
-    allTargets = []
+    all_drugs = []
+    all_targets = []
     try:
-        drugFile = open(drugsPath, "r")
+        drug_file = open(drugs_path, "r")
         # counter for statistics
         count = 0
-        noProteinInformationCount = 0
-        errorFormatCount = 0
-        parsingErrorCount = 0
-        withTargetCount = 0
-        withoutATCcodeCount = 0
-        drugsWithoutATC = []
-        drugFile.readline()  # read the first line, it is unnecessary header
-        for line in drugFile:
+        no_protein_information_count = 0
+        error_format_count = 0
+        parsing_error_count = 0
+        with_target_count = 0
+        without_atc_code_count = 0
+        drugs_without_atc = []
+        drug_file.readline()  # read the first line, it is unnecessary header
+        for line in drug_file:
             drug = None
             line = line.split("|")
-            if line[0] == 'Idelalisib':
-                print("What the fuck, dude?!")
             if len(line) != 6:  # check for correct format
-                errorFormatCount += 1
+                error_format_count += 1
                 break
             if line[0] != '' and line[1] != '':  # check for name and status
                 drug = Drug(line[0].upper(), line[1].upper())
                 try:
                     if line[2] != '':  # check for target
-                        tar = getProtInfo(line[2])
+                        tar = parse_protein_info(line[2])
                         drug.tar = tar
                     if line[3] != '':  # check for enzyme
-                        enz = getProtInfo(line[3])
+                        enz = parse_protein_info(line[3])
                         drug.enz = enz
                     if line[4] != '':  # check for transporter
-                        tra = getProtInfo(line[4])
+                        tra = parse_protein_info(line[4])
                         drug.tra = tra
                     if line[5] != '\n':  # check for carrier
-                        car = getProtInfo(line[5].rstrip())
+                        car = parse_protein_info(line[5].rstrip())
                         drug.car = car
                 except:
-                    parsingErrorCount += 1
+                    parsing_error_count += 1
                     print(line)
                     print("Unexpected error:", sys.exc_info()[0])
 
                 if not drug.tar and not drug.enz and not drug.tra and not drug.car:  # check if dicts are empty
-                    noProteinInformationCount += 1
+                    no_protein_information_count += 1
             else:
-                errorFormatCount += 1
+                error_format_count += 1
 
-            if drug != None and drug.hasTargetAndActivityValue():
-                withoutATCcodeCount += findATCforDrug(atcPath, atcAdditionalPath, drug, drugsWithoutATC)
+            if drug is not None and drug.has_target_and_activity_value():
+                without_atc_code_count += find_atc_for_drug(atc_path, drug, drugs_without_atc, atc_additional_path)
                 drugs[drug.name.upper()] = drug
-                appendDrugName(allDrugs, drug.name)
-                appendTargetNames(allTargets, drug.tar)
-                withTargetCount += 1
+                append_drug_name(all_drugs, drug.name)
+                append_target_names(all_targets, drug.tar)
+                with_target_count += 1
 
             count += 1
 
-        printStatistics(count, errorFormatCount, noProteinInformationCount, parsingErrorCount, withTargetCount,
-                        withoutATCcodeCount, drugsWithoutATC)
+        print_statistics(count, error_format_count, no_protein_information_count, parsing_error_count,
+                         with_target_count,
+                         without_atc_code_count, drugs_without_atc)
 
-        drugFile.close()
+        drug_file.close()
     except:
-        print("There was a problem processing the file: " + str(drugsPath) + " and/or " + str(
-            atcPath) + " and/or " + str(atcAdditionalPath))
+        print("There was a problem processing the file: " + str(drugs_path) + " and/or " + str(
+            atc_path) + " and/or " + str(atc_additional_path))
         print("Unexpected error:", sys.exc_info()[0])
 
-    return drugs, allDrugs, allTargets
+    return drugs, all_drugs, all_targets
 
 
-def printStatistics(count, errorFormatCount, noProteinInformationCount, parsingErrorCount, withTargetCount,
-                    withoutATCcode, drugsWithoutATC):
+def print_statistics(count, error_format_count, no_protein_information_count, parsing_error_count, with_target_count,
+                     without_atc_code, drugs_without_atc):
     print("Drugs processed: " + str(count))
-    print("Drugs processed with target: " + str(withTargetCount))
-    print("Drugs with parsing errors: " + str(parsingErrorCount))
-    print("Drugs without further information: " + str(noProteinInformationCount))
-    print("Lines with format errors: " + str(errorFormatCount))
-    print("Drugs without atc code: " + str(withoutATCcode))
-    print("Drugs: " + str(drugsWithoutATC))
+    print("Drugs processed with target: " + str(with_target_count))
+    print("Drugs with parsing errors: " + str(parsing_error_count))
+    print("Drugs without further information: " + str(no_protein_information_count))
+    print("Lines with format errors: " + str(error_format_count))
+    print("Drugs without atc code: " + str(without_atc_code))
+    print("Drugs: " + str(drugs_without_atc))
 
 
-drugs, allDrugs, allTargets = parseDrugs(config.DRUGBANK_FILE_PATH, config.ATC_CODE_FILE_PATH,
-                                         config.ATC_CODE_ADDITION_FILE_PATH)
-print("I found " + str(len(allDrugs)) + " drugs")
-print("I found " + str(len(allTargets)) + " targets")
-FL.saveDrugsToFiles(config.DRUG_FILE_PATH, drugs)
-FL.saveToFile(config.DRUGS_LIST, allDrugs)
-FL.saveToFile(config.TARGETS_LIST, allTargets)
+drugs, all_drugs, all_targets = parse_drugs_info(config.DRUGBANK_FILE_PATH, config.ATC_CODE_FILE_PATH,
+                                                 config.ATC_CODE_ADDITION_FILE_PATH)
+print("I found " + str(len(all_drugs)) + " drugs")
+print("I found " + str(len(all_targets)) + " targets")
+FL.save_drugs_to_files(config.DRUG_FILE_PATH, drugs)
+FL.save_to_file(config.DRUGS_LIST, all_drugs)
+FL.save_to_file(config.TARGETS_LIST, all_targets)
 
-#print("My gloabal counter found: " + str(GLOABALCOUNTER) + " appearances")
+# print("My gloabal counter found: " + str(GLOABALCOUNTER) + " appearances")

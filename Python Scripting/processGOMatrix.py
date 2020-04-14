@@ -1,42 +1,42 @@
-
 import numpy as np
 import config
 import fileLoader as FL
 
-def getAllGOTermNames(allTargets, dictGO):
-    allGOTerms = []
-    for i in range(0, len(allTargets)):
-        if allTargets[i] in dictGO:
-            for value in dictGO.get(allTargets[i]):
-                if value not in allGOTerms:
-                    allGOTerms.append(value)
 
-    return allGOTerms
+def get_all_go_term_names(all_targets, dict_go):
+    all_go_terms = []
+    for i in range(0, len(all_targets)):
+        if all_targets[i] in dict_go:
+            for value in dict_go.get(all_targets[i]):
+                if value not in all_go_terms:
+                    all_go_terms.append(value)
 
-def buildMatrixGO(allTargets, allGOTerms, dictGO):
-    countTargetNotFound = 0
-    listTargetNotFound = []
-    matrixGO = np.zeros((len(allTargets),len(allGOTerms)))
-    for i in range(0, len(allTargets)):
+    return all_go_terms
+
+
+def build_matrix_go(all_targets, all_go_terms, dict_go):
+    count_target_not_found = 0
+    list_target_not_found = []
+    matrix_go = np.zeros((len(all_targets), len(all_go_terms)))
+    for i in range(0, len(all_targets)):
         if i % 500 == 0:
-            print("Reached Nr: " + str(i) + "/" + str(len(allTargets)))
-        if allTargets[i] in dictGO:
-            for value in dictGO.get(allTargets[i]):
-                x = allGOTerms.index(value)
-                matrixGO[i, x] = 1
+            print("Reached Nr: " + str(i) + "/" + str(len(all_targets)))
+        if all_targets[i] in dict_go:
+            for value in dict_go.get(all_targets[i]):
+                x = all_go_terms.index(value)
+                matrix_go[i, x] = 1
         else:
-            countTargetNotFound += 1
-            listTargetNotFound.append(allTargets[i])
+            count_target_not_found += 1
+            list_target_not_found.append(all_targets[i])
 
-    print("Targets not found in GO terms list: " + str(countTargetNotFound))
-    print("Targets not found:\n" + str(listTargetNotFound))
-    return matrixGO
+    print("Targets not found in GO terms list: " + str(count_target_not_found))
+    print("Targets not found:\n" + str(list_target_not_found))
+    return matrix_go
 
 
-allDrugs, allTargets = FL.loadFromFiles(config.DRUGS_LIST, config.TARGETS_LIST)
-dictGO = FL.loadGODictionary(config.GO_TERM_FILE_PATH)
-allGOTerms = getAllGOTermNames(allTargets, dictGO)
-FL.saveToFile(config.GO_TERMS_LIST, allGOTerms)
-matrixGO = buildMatrixGO(allTargets, allGOTerms, dictGO)
-np.save(config.MATRIX_GO_TERMS, matrixGO)
-
+all_drugs, all_targets = FL.load_from_files(config.DRUGS_LIST, config.TARGETS_LIST)
+dict_go = FL.load_go_dictionary(config.GO_TERM_FILE_PATH)
+all_go_terms = get_all_go_term_names(all_targets, dict_go)
+FL.save_to_file(config.GO_TERMS_LIST, all_go_terms)
+matrix_go = build_matrix_go(all_targets, all_go_terms, dict_go)
+np.save(config.MATRIX_GO_TERMS, matrix_go)

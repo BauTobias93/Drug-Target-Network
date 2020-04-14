@@ -5,22 +5,14 @@ import numpy as np
 import sys
 
 
-def getAllDrugsAsDict(path):
-    allDrugs = {}
-    drugs = getAllDrugs(path)
-    for drug in drugs:
-        allDrugs[drug.name] = drug
-
-    return allDrugs
-
-def getAllDrugs(path):
+def get_all_drugs(path):
     drugs = {}
     try:
         file = open(path, "r")
-        jsonDict = json.loads(file.read())
-        for key, value in jsonDict.items():
+        json_dict = json.loads(file.read())
+        for key, value in json_dict.items():
             drug = Drug()
-            drug.loadJSON(value)
+            drug.load_json(value)
             drugs[drug.name] = drug
 
         file.close()
@@ -30,22 +22,22 @@ def getAllDrugs(path):
     return drugs
 
 
-def loadFromFiles(drugsListPath, targetsListPath):
-    allDrugs = []
-    allTargets = []
+def load_from_files(drugs_list_path, targets_list_path):
+    all_drugs = []
+    all_targets = []
     try:
-        with open(drugsListPath) as json_file:
-            allDrugs = json.load(json_file)
-        with open(targetsListPath) as json_file:
-            allTargets = json.load(json_file)
+        with open(drugs_list_path) as json_file:
+            all_drugs = json.load(json_file)
+        with open(targets_list_path) as json_file:
+            all_targets = json.load(json_file)
     except:
-        print("There was a problem reading the Drugs and Targets from: " + str(drugsListPath) + "\nand: " + str(
-            targetsListPath))
+        print("There was a problem reading the drugs and targets from: " + str(drugs_list_path) + "\nand: " + str(
+            targets_list_path))
         print("Unexpected error:", sys.exc_info()[0])
-    return allDrugs, allTargets
+    return all_drugs, all_targets
 
 
-def loadMatrix(path):
+def load_matrix(path):
     matrix = []
     try:
         matrix = np.load(path)
@@ -58,54 +50,55 @@ def loadMatrix(path):
     return matrix
 
 
-def saveToFile(path, listOfThings):
+def save_to_file(path, list_of_things):
     try:
-        listOfThingsJSON = json.dumps(listOfThings)
+        list_of_things_json = json.dumps(list_of_things)
         file = open(path, "w")
-        file.write(listOfThingsJSON)
+        file.write(list_of_things_json)
         file.close()
     except:
         print("There was a problem writing to the file: " + str(path))
         print("Unexpected error:", sys.exc_info()[0])
 
 
-def saveDrugsToFiles(path, drugs):
+def save_drugs_to_files(path, drugs):
     try:
         file = open(path, "w")
-        jsonString = json.dumps(drugs, default=lambda o: o.__dict__, sort_keys=False, indent=4)
-        file.write(jsonString)
+        json_string = json.dumps(drugs, default=lambda o: o.__dict__, sort_keys=False, indent=4)
+        file.write(json_string)
         file.close()
     except:
         print("There was a problem writing to the file: " + str(path))
         print("Unexpected error:", sys.exc_info()[0])
 
 
-def loadGODictionary(path):
-    dictGO = {}
+def load_go_dictionary(path):
+    dict_go = {}
     try:
         with open(path) as json_file:
-            dictLoaded = json.load(json_file)
+            dict_loaded = json.load(json_file)
 
-        for key, value in dictLoaded.items():
-            dictGO[key] = value[:-1].split(",")
+        for key, value in dict_loaded.items():
+            dict_go[key] = value[:-1].split(",")
 
     except:
         print("There was a problem reading from the file: " + str(path))
         print("Unexpected error:", sys.exc_info()[0])
 
-    return dictGO
+    return dict_go
 
-def loadAndBuildDictionary(path, position, splitCharacter):
-    newDict = {}
+
+def load_and_build_dictionary(path, position, split_character):
+    new_dict = {}
     try:
         file = open(path, "r")
         for line in file:
-            lineSplit = line.split(splitCharacter)
-            newDict[lineSplit[0]] = lineSplit[position]
+            line_split = line.split(split_character)
+            new_dict[line_split[0]] = line_split[position]
 
         file.close()
     except:
         print("There was a problem writing to the file: " + str(path))
         print("Unexpected error:", sys.exc_info()[0])
 
-    return newDict
+    return new_dict
