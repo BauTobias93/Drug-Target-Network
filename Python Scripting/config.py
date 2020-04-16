@@ -1,7 +1,7 @@
-# DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar_smallSample_signs.bsv"
+DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar_smallSample_signs.bsv"
 #DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar_smallSample.bsv"
-# DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar.bsv"
-DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar_all.bsv"
+#DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar.bsv"
+#DRUGBANK_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/drtar_all.bsv"
 ATC_CODE_FILE_PATH_OLD = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/dbank.dsv"
 ATC_CODE_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/dbank_v2.dsv"
 ATC_CODE_ADDITION_FILE_PATH = "C:/Users/tobia/Documents/FH_Hagenberg_MBI/6.Semester/Berufspraktikum/Drug-Target-Network/Python Scripting/data/dbank_additional.dsv"
@@ -22,4 +22,6 @@ MATRIX_GO_TERMS = "./data/matrix_go_terms.npy"
 TARGET_CLASSES_GENERAL_GROUPS = "./data/targetClass.txt"
 
 PACT_THRESHOLD = 4
-EXPERIMENTAL_VALUE_WEIGHT = 0.25
+SMALL_WEIGHT = 0.25
+MEDIUM_WEIGHT = 0.4
+SCALE_DOWN_FACTOR = 6

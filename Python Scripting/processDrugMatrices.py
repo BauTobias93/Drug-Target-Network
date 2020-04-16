@@ -7,10 +7,10 @@ import fileLoader as FL
 
 
 def get_atc_value(first_atc_codes, second_atc_codes):
-    best_value = 1
+    best_value = 1.0
     for first_atc_code in first_atc_codes:
         for second_atc_code in second_atc_codes:
-            value = 1
+            value = 1.0
             for i in range(0, 7):
                 if i < len(first_atc_code) and i < len(second_atc_code):
                     if i != 1 and i != 5:
@@ -81,43 +81,55 @@ def get_processed_vectors(drugs, all_drugs, all_targets, matrix, i, j, process_d
 
     return first_row, second_row, experimental_value_row
 
+def get_weight_row_drug(drugs, all_drugs, all_targets, matrix, i, j):
+    weight_row = np.full(np.size(matrix, 1), 1.0)
+    for col in range(0, np.size(matrix, 1)):
+        if all_targets[col] in drugs[all_drugs[i]].tar or all_targets[col] in drugs[all_drugs[j]].tar:
+            # find protein targets in drugs or use default constructor
+            if all_targets[col] in drugs[all_drugs[i]].tar:
+                first_target = drugs[all_drugs[i]].tar[all_targets[col]]
+            else:
+                first_target = Protein()
+            if all_targets[col] in drugs[all_drugs[j]].tar:
+                second_target = drugs[all_drugs[j]].tar[all_targets[col]]
+            else:
+                second_target = Protein()
 
-def get_distance(drugs, all_drugs, all_targets, matrix, i, j, process_drugs):
-    first_row, second_row, experimental_value_row = get_processed_vectors(drugs, all_drugs, all_targets, matrix, i,
-                                                                          j,
-                                                                          process_drugs)  # rows to be calculated in respect to signs
-    # print("First row for i: " + str(i))
-    # print(first_row)
-    # print("Second row for j: " + str(j))
-    # print(second_row)
-    # print(experimental_value_row)
-    magnitudes = np.linalg.norm(first_row) * np.linalg.norm(second_row)
-    return 1 - np.dot(first_row, second_row) / magnitudes if magnitudes > 0 else 1
+            #check how much the range will differ with respect to the signs
+            if (first_target.less_greater_than_sign != 0 and second_target.less_greater_than_sign != 0) or \
+                    first_target.experimental_value or second_target.experimental_value:
+                weight_row[col] = config.SMALL_WEIGHT
+            elif first_target.less_greater_than_sign != 0 or second_target.less_greater_than_sign != 0:
+                weight_row[col] = config.MEDIUM_WEIGHT
 
 
-def get_weighted_distance(drugs, all_drugs, all_targets, matrix, i, j, process_drugs):
+    return weight_row
+
+
+
+def get_drug_distance(matrix, i, j):
+    magnitudes = np.linalg.norm(matrix[i]) * np.linalg.norm(matrix[j])
+    return 1 - np.dot(matrix[i], matrix[j]) / magnitudes if magnitudes > 0 else 1
+
+
+def get_weighted_drug_distance(drugs, all_drugs, all_targets, matrix, i, j):
     sum_of_weights = 0
     sum_of_differences = 0
-    first_row, second_row, experimental_value_row = get_processed_vectors(drugs, all_drugs, all_targets, matrix, i,
-                                                                          j,
-                                                                          process_drugs)  # rows to be calculated in respect to signs
+    weight_row = get_weight_row_drug(drugs, all_drugs, all_targets, matrix, i, j)
     for col in range(0, np.size(matrix, 1)):
-        if experimental_value_row[col]:  # one of them or both are unknown values
-            sum_of_weights += config.EXPERIMENTAL_VALUE_WEIGHT
-            sum_of_differences += abs(first_row[col] - second_row[col]) * config.EXPERIMENTAL_VALUE_WEIGHT
-        else:
-            sum_of_weights += 1
-            sum_of_differences += abs(first_row[col] - second_row[col])
+        sum_of_weights += weight_row[col]
+        sum_of_differences += abs(matrix[i][col] - matrix[j][col]) * weight_row[col]
 
-    return sum_of_differences / sum_of_weights
+    return sum_of_differences / (sum_of_weights * config.SCALE_DOWN_FACTOR)\
+        if sum_of_weights > 0 and config.SCALE_DOWN_FACTOR > 0 else 1
 
 
 def build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, with_atc_code):
     matrix_drugs = np.zeros((len(all_drugs), len(all_drugs)))
-    for i in range(0, np.size(matrix_drugs, 0)):  # iterate over row
-        for j in range(i, np.size(matrix_drugs, 0)):  # iterate over row
-            # drug_distance = get_distance(drugs, all_drugs, all_targets, matrix_pact, j, i, True)
-            drug_distance = get_weighted_distance(drugs, all_drugs, all_targets, matrix_pact, j, i, True)
+    for i in range(0, np.size(matrix_drugs, 0)):  # iterate row
+        for j in range(i, np.size(matrix_drugs, 0)):  # iterate row
+            # drug_distance = get_distance(matrix_pact, j, i)
+            drug_distance = get_weighted_drug_distance(drugs, all_drugs, all_targets, matrix_pact, j, i)
             matrix_drugs[i, j] = drug_distance
             matrix_drugs[j, i] = drug_distance
             if with_atc_code:

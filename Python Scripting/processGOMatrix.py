@@ -19,17 +19,15 @@ def build_matrix_go(all_targets, all_go_terms, dict_go):
     list_target_not_found = []
     matrix_go = np.zeros((len(all_targets), len(all_go_terms)))
     for i in range(0, len(all_targets)):
-        if i % 500 == 0:
-            print("Reached Nr: " + str(i) + "/" + str(len(all_targets)))
         if all_targets[i] in dict_go:
-            for value in dict_go.get(all_targets[i]):
+            for value in dict_go[all_targets[i]]:
                 x = all_go_terms.index(value)
                 matrix_go[i, x] = 1
         else:
             count_target_not_found += 1
             list_target_not_found.append(all_targets[i])
 
-    print("Targets not found in GO terms list: " + str(count_target_not_found))
+    print("Targets not found in GO terms list: " + str(count_target_not_found) + "/" + str(len(all_go_terms)))
     print("Targets not found:\n" + str(list_target_not_found))
     return matrix_go
 

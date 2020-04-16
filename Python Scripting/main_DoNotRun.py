@@ -14,6 +14,7 @@ import preProcessATCfile
 #TODO check if folder where files are going to be written is actually there
 #TODO delete all computing parts of files so they can be imported without running it
 #TODO get rid of all the not used imports
+#TODO add dimension checks when loading matrices
 
 '''
 #preprocess ATC file
