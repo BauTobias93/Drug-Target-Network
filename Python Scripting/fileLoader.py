@@ -3,6 +3,7 @@ from Drug import Drug
 import json
 import numpy as np
 import sys
+import os
 
 
 def get_all_drugs(path):
@@ -50,9 +51,12 @@ def load_matrix(path):
     return matrix
 
 
-def save_to_file(path, list_of_things):
+def save_to_file(path, objects):
     try:
-        list_of_things_json = json.dumps(list_of_things)
+        directory = path.split("/")[1]  # format of data files is ./directory/file_name.file_type
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        list_of_things_json = json.dumps(objects)
         file = open(path, "w")
         file.write(list_of_things_json)
         file.close()
@@ -63,6 +67,9 @@ def save_to_file(path, list_of_things):
 
 def save_drugs_to_files(path, drugs):
     try:
+        directory = path.split("/")[1]      #format of data files is ./directory/file_name.file_type
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         file = open(path, "w")
         json_string = json.dumps(drugs, default=lambda o: o.__dict__, sort_keys=False, indent=4)
         file.write(json_string)
@@ -102,3 +109,15 @@ def load_and_build_dictionary(path, position, split_character):
         print("Unexpected error:", sys.exc_info()[0])
 
     return new_dict
+
+def load_single_value_file(path):
+    single_value = 0
+    try:
+        with open(path) as json_file:
+            single_value = json.load(json_file)
+
+    except:
+        print("There was a problem reading from the file: " + str(path))
+        print("Unexpected error:", sys.exc_info()[0])
+
+    return single_value

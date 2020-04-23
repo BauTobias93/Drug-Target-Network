@@ -123,10 +123,17 @@ def append_target_names(all_targets, target_dict):
             all_targets.append(target)
 
 
+def add_target_values_to_list(values_list, targets):
+    for key, target in targets.items():
+        if target.value != 0:
+            values_list.append(target.value)
+
+
 def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
     drugs = {}
     all_drugs = []
     all_targets = []
+    pact_value_median = 0
     try:
         drug_file = open(drugs_path, "r")
         # counter for statistics
@@ -137,6 +144,7 @@ def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
         with_target_count = 0
         without_atc_code_count = 0
         drugs_without_atc = []
+        pact_value_list = []
         drug_file.readline()  # read the first line, it is unnecessary header
         for line in drug_file:
             drug = None
@@ -150,6 +158,7 @@ def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
                     if line[2] != '':  # check for target
                         tar = parse_protein_info(line[2])
                         drug.tar = tar
+                        add_target_values_to_list(pact_value_list, tar)
                     if line[3] != '':  # check for enzyme
                         enz = parse_protein_info(line[3])
                         drug.enz = enz
@@ -177,7 +186,8 @@ def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
                 with_target_count += 1
 
             count += 1
-
+        pact_value_list.sort()
+        pact_value_median = pact_value_list[int(len(pact_value_list) / 2)]
         print_statistics(count, error_format_count, no_protein_information_count, parsing_error_count,
                          with_target_count,
                          without_atc_code_count, drugs_without_atc)
@@ -188,7 +198,7 @@ def parse_drugs_info(drugs_path, atc_path, atc_additional_path=None):
             atc_path) + " and/or " + str(atc_additional_path))
         print("Unexpected error:", sys.exc_info()[0])
 
-    return drugs, all_drugs, all_targets
+    return drugs, all_drugs, all_targets, pact_value_median
 
 
 def print_statistics(count, error_format_count, no_protein_information_count, parsing_error_count, with_target_count,
@@ -202,10 +212,14 @@ def print_statistics(count, error_format_count, no_protein_information_count, pa
     print("Drugs: " + str(drugs_without_atc))
 
 
-drugs, all_drugs, all_targets = parse_drugs_info(config.DRUGBANK_FILE_PATH, config.ATC_CODE_FILE_PATH,
-                                                 config.ATC_CODE_ADDITION_FILE_PATH)
+drugs, all_drugs, all_targets, pact_value_median = parse_drugs_info(config.DRUGBANK_FILE_PATH,
+                                                                    config.ATC_CODE_FILE_PATH,
+                                                                    config.ATC_CODE_ADDITION_FILE_PATH)
+
+print("Calculated median of pact values: " + str(pact_value_median))
 print("I found " + str(len(all_drugs)) + " drugs")
 print("I found " + str(len(all_targets)) + " targets")
+FL.save_to_file(config.PACT_MEDIAN, pact_value_median)
 FL.save_drugs_to_files(config.DRUG_FILE_PATH, drugs)
 FL.save_to_file(config.DRUGS_LIST, all_drugs)
 FL.save_to_file(config.TARGETS_LIST, all_targets)

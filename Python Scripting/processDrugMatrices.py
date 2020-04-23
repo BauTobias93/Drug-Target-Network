@@ -6,6 +6,38 @@ from Protein import Protein
 import fileLoader as FL
 
 
+def build_atc_distance_matrix(drugs, all_drugs):
+    matrix_atc_code = np.zeros((len(all_drugs), len(all_drugs)))
+    list_atc_distances = []
+    for i in range(0, np.size(matrix_atc_code, 0)):  # iterate row
+        for j in range(i, np.size(matrix_atc_code, 0)):  # iterate row
+            atc_distance = get_atc_distance(drugs, all_drugs, i, j)
+            if atc_distance is not None:  # check if both drugs have an atc code
+                matrix_atc_code[i, j] = atc_distance
+                matrix_atc_code[j, i] = atc_distance
+                list_atc_distances.append(atc_distance)
+
+    list_atc_distances.sort()
+    atc_median = list_atc_distances[int(len(list_atc_distances) / 2)]
+    return matrix_atc_code, atc_median
+
+
+'''
+ print(list_atc_distances)
+    list_atc_distances.sort()
+    print(list_atc_distances)
+    medianIdx = int(len(list_atc_distances) / 2)
+    print("Median position is: " + str(medianIdx) + "/" + str(len(list_atc_distances)))
+    for i in range(0,len(list_atc_distances)):
+        if list_atc_distances[i] == 1:
+            print("Index found first 1: " +str(i) + "/" + str(len(list_atc_distances)))
+            break
+
+    atc_median = list_atc_distances[int(len(list_atc_distances) / 2)]
+    print(atc_median)
+'''
+
+
 def get_atc_value(first_atc_codes, second_atc_codes):
     best_value = 1.0
     for first_atc_code in first_atc_codes:
@@ -39,48 +71,6 @@ def get_atc_distance(drugs, all_drugs, i, j):
     return None
 
 
-def get_processed_vectors(drugs, all_drugs, all_targets, matrix, i, j, process_drugs):
-    first_row = np.copy(matrix[i])
-    second_row = np.copy(matrix[j])
-    experimental_value_row = np.full(np.size(matrix, 1), False)
-    for col in range(0, np.size(matrix, 1)):
-        if process_drugs:  # processing drug distances
-            if all_targets[col] in drugs[all_drugs[i]].tar:
-                first_target = drugs[all_drugs[i]].tar[all_targets[col]]
-            else:
-                first_target = Protein()
-            if all_targets[col] in drugs[all_drugs[j]].tar:
-                second_target = drugs[all_drugs[j]].tar[all_targets[col]]
-            else:
-                second_target = Protein()
-        else:  # processing target distances
-            if all_targets[i] in drugs[all_drugs[col]].tar:
-                first_target = drugs[all_drugs[col]].tar[all_targets[i]]
-            else:
-                first_target = Protein()
-            if all_targets[j] in drugs[all_drugs[col]].tar:
-                second_target = drugs[all_drugs[col]].tar[all_targets[j]]
-            else:
-                second_target = Protein()
-        if first_target.experimental_value or second_target.experimental_value:  # one or both values are experimentalValues
-            experimental_value_row[col] = True
-        if first_target.less_greater_than_sign != 0 or second_target.less_greater_than_sign != 0:
-            if first_target.less_greater_than_sign == -1 and second_target.less_greater_than_sign == -1:  # < and <
-                if first_target.value > second_target.value:
-                    first_row[col] = second_row[col]
-                else:
-                    second_row[col] = first_row[col]
-            elif first_target.less_greater_than_sign == -1 and first_target.value > second_target.value \
-                    and (
-                    second_target.less_greater_than_sign == 0 or second_target.less_greater_than_sign == 1):  # < and fixed && < and >
-                first_row[col] = second_row[col]
-            elif second_target.less_greater_than_sign == -1 and first_target.value < second_target.value \
-                    and (
-                    first_target.less_greater_than_sign == 0 or first_target.less_greater_than_sign == 1):  # fixed and < && < and >
-                second_row[col] = first_row[col]
-
-    return first_row, second_row, experimental_value_row
-
 def get_weight_row_drug(drugs, all_drugs, all_targets, matrix, i, j):
     weight_row = np.full(np.size(matrix, 1), 1.0)
     for col in range(0, np.size(matrix, 1)):
@@ -95,16 +85,14 @@ def get_weight_row_drug(drugs, all_drugs, all_targets, matrix, i, j):
             else:
                 second_target = Protein()
 
-            #check how much the range will differ with respect to the signs
+            # check how much the range will differ with respect to the signs
             if (first_target.less_greater_than_sign != 0 and second_target.less_greater_than_sign != 0) or \
                     first_target.experimental_value or second_target.experimental_value:
                 weight_row[col] = config.SMALL_WEIGHT
             elif first_target.less_greater_than_sign != 0 or second_target.less_greater_than_sign != 0:
                 weight_row[col] = config.MEDIUM_WEIGHT
 
-
     return weight_row
-
 
 
 def get_drug_distance(matrix, i, j):
@@ -117,26 +105,27 @@ def get_weighted_drug_distance(drugs, all_drugs, all_targets, matrix, i, j):
     sum_of_differences = 0
     weight_row = get_weight_row_drug(drugs, all_drugs, all_targets, matrix, i, j)
     for col in range(0, np.size(matrix, 1)):
-        sum_of_weights += weight_row[col]
-        sum_of_differences += abs(matrix[i][col] - matrix[j][col]) * weight_row[col]
+        if matrix[i][col] != 0 or matrix[j][col] != 0:
+            sum_of_weights += weight_row[col]
+            sum_of_differences += abs(matrix[i][col] - matrix[j][col]) * weight_row[col]
 
-    return sum_of_differences / (sum_of_weights * config.SCALE_DOWN_FACTOR)\
+    return sum_of_differences / (sum_of_weights * config.SCALE_DOWN_FACTOR) \
         if sum_of_weights > 0 and config.SCALE_DOWN_FACTOR > 0 else 1
 
 
-def build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, with_atc_code):
+def build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, matrix_atc_code, atc_median, with_atc_code):
     matrix_drugs = np.zeros((len(all_drugs), len(all_drugs)))
     for i in range(0, np.size(matrix_drugs, 0)):  # iterate row
         for j in range(i, np.size(matrix_drugs, 0)):  # iterate row
             # drug_distance = get_distance(matrix_pact, j, i)
-            drug_distance = get_weighted_drug_distance(drugs, all_drugs, all_targets, matrix_pact, j, i)
+            drug_distance = get_weighted_drug_distance(drugs, all_drugs, all_targets, matrix_pact, i, j)
             matrix_drugs[i, j] = drug_distance
             matrix_drugs[j, i] = drug_distance
             if with_atc_code:
-                atc_distance = get_atc_distance(drugs, all_drugs, j, i)
-                if atc_distance is not None:  # check if both drugs have an atc code
-                    matrix_drugs[i, j] = 0.5 * matrix_drugs[i, j] + 0.5 * atc_distance
-                    matrix_drugs[j, i] = 0.5 * matrix_drugs[j, i] + 0.5 * atc_distance
+                atc_distance = matrix_atc_code[i, j] if matrix_atc_code[i, j] != 0 else atc_median
+                matrix_drugs[i, j] = 0.5 * matrix_drugs[i, j] + 0.5 * atc_distance
+                matrix_drugs[j, i] = 0.5 * matrix_drugs[j, i] + 0.5 * atc_distance
+
     return matrix_drugs
 
 
@@ -144,13 +133,16 @@ drugs = FL.get_all_drugs(config.DRUG_FILE_PATH)
 all_drugs, all_targets = FL.load_from_files(config.DRUGS_LIST, config.TARGETS_LIST)
 matrix_pact = FL.load_matrix(config.MATRIX_PACT)
 
-matrix_drug_distance = build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, False)
-# matrix_drug_atc_distance = build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, True)
+matrix_atc_code, atc_median = build_atc_distance_matrix(drugs, all_drugs)
 
-np.savetxt("./csv-files/drugDistance.csv", matrix_drug_distance, delimiter=";", fmt='%.3f')
-# np.savetxt("./csv-files/drugDistance_atc.csv", matrix_drug_atc_distance, delimiter=";", fmt='%.3f')
+matrix_drug_distance = build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, matrix_atc_code,
+                                                  atc_median, False)
+matrix_drug_atc_distance = build_matrix_drug_distance(drugs, matrix_pact, all_drugs, all_targets, matrix_atc_code, atc_median, True)
+
+np.savetxt("./csv-files/drug_distance.csv", matrix_drug_distance, delimiter=";", fmt='%.3f')
+np.savetxt("./csv-files/drug_distance_atc.csv", matrix_drug_atc_distance, delimiter=";", fmt='%.3f')
 
 np.save(config.MATRIX_DRUG_DISTANCE, matrix_drug_distance)
-# np.save(config.MATRIX_DRUG_ATC_DISTANCE, matrix_drug_atc_distance)
+np.save(config.MATRIX_DRUG_ATC_DISTANCE, matrix_drug_atc_distance)
 
 print("Drug Matrices were calculated")
